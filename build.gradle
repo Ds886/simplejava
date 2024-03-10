@@ -1,9 +1,18 @@
 plugins {
     id 'java'
+    id 'application'
 }
+
 
 group = 'org.simple'
 version = '1.0-SNAPSHOT'
+mainClassName = "org.simple.Main"
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.simple.Main'
+    }
+}
 
 repositories {
     mavenCentral()
@@ -17,3 +26,11 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+task runWithJavaExec(type: JavaExec) {
+    group = "Execution"
+    description = "Run the main class with JavaExecTask"
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'org.simple.Main'
+}
+
