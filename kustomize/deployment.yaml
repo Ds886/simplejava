@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podinfo
+spec:
+  minReadySeconds: 3
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 60
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: simplejava
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9797"
+      labels:
+        app: simplejava
+    spec:
+      containers:
+      - name: simplejava
+        image: ghcr.io/Ds886/simplejava:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+        volumeMounts:
+          - name: data
+            mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}
