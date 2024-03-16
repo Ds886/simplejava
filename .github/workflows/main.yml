@@ -101,6 +101,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "GHA: Update build time [no ci]"
+          git push
           git tag $(grep semver version.properties|cut -d= -f2)
           git push --tags
 
