@@ -81,7 +81,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
-          git commit -m "GHA: Update build time [no-ci]"
+          git commit -m "GHA: Update build time [no ci]"
           git push
         
 # TODO: bundle tar and jar
