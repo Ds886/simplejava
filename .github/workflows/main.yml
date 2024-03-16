@@ -186,6 +186,12 @@ jobs:
           registry_username: ${{ secrets.GH_USER }}
           registry_password: ${{ secrets.GH_TOKEN}}
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: art-helm
+          path: |
+            *.tgz
+
 
 
   bump-version:
@@ -258,11 +264,22 @@ jobs:
           path: build
           merge-multiple: true
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: art-helm
+          merge-multiple: true
+
       - name: rename jib
         env:
           appversion: ${{ needs.get-version.outputs.appversion}}
         run: |
           mv build/jib-image.tar build/simplejava-docker-${appversion}.tar
+
+      - name: rename helm
+        env:
+          appversion: ${{ needs.get-version.outputs.appversion}}
+        run: |
+          mv simplejava-${appversion}.tgz simplejava-chart-${appversion}.tgz  
 
       - name: Create Release
         id: create_release
@@ -271,6 +288,8 @@ jobs:
           files: |
             build/libs/simplejava-${{ needs.get-version.outputs.appversion}}.jar
             build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
+            build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
+            simplejava-chart-${{ needs.get-version.outputs.appversion}}.tgz  
           tag_name: ${{ needs.get-version.outputs.appversion}}
           name: "Release ${{ steps.get_version.outputs.stdout }}"
           body: |
