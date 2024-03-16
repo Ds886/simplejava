@@ -258,6 +258,12 @@ jobs:
           path: build
           merge-multiple: true
 
+      - name: rename jib
+        env:
+          appversion: ${{ needs.get-version.outputs.appversion}}
+        run: |
+          mv build/jib-image.tar build/simplejava-docker-${appversion}.tar
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
