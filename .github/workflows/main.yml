@@ -223,6 +223,7 @@ jobs:
           merge-multiple: true
 
       - name: Get version
+        uses: mathiasvr/command-output@v2.0.0
         id: get_version
         run: |
           grep semver version.properties|cut -d= -f2
