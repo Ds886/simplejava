@@ -5,7 +5,9 @@ on:
     branches:
       - main
 
-permissions: write-all
+permissions:
+  packages: write # needed for ghcr.io access
+  contents: write
 
 env:
   OCI_REPO: "oci://ghcr.io/ds886/manifests/${{ github.event.repository.name }}"
@@ -195,13 +197,13 @@ jobs:
         env:
           appversion: ${{ needs.get-version.outputs.appversion}}
         run: |
-          mv simplejava-${appversion}.tgz simplejava-chart-${appversion}.tgz
+          mv simplejava-${appversion}.tgz build/simplejava-chart-${appversion}.tgz
 
       - uses: actions/upload-artifact@v4
         with:
           name: art-helm
           path: |
-            *.tgz
+            build/*.tgz
 
 
 
@@ -278,6 +280,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: art-helm
+          path: build
           merge-multiple: true
 
       # this might fail succesfully a probable solution is this or change action- https://github.com/softprops/action-gh-release/issues/194
@@ -290,8 +293,8 @@ jobs:
             build/libs/simplejava-${{ needs.get-version.outputs.appversion}}.jar
             build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
             build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
-            simplejava-chart-${{ needs.get-version.outputs.appversion}}.tgz  
-          tag_name: ${{ needs.get-version.outputs.appversion}}
+            build/simplejava-chart-${{ needs.get-version.outputs.appversion}}.tgz  
+          tag_name: ${{ needs.get-version.outputs.appversion }}
           name: "Release"
           body: |
               Release
