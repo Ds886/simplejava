@@ -73,15 +73,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-build
-          path: build
-          merge-multiple: true
 
       - name: Build with Gradle
         run: |
-          ./gradlew  test
+          ./gradlew  build test
 
   publish-jar:
     runs-on:  ubuntu-latest
