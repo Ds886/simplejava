@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: simplejava
-  namespace: default
 spec:
   minReadySeconds: 3
   revisionHistoryLimit: 5
