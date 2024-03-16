@@ -173,9 +173,15 @@ jobs:
 
       - name: rename jib
         run: |
-          ls  build build/libs
+          echo "****" && ls  build build/libs && echo "****"
           mv build/jib-image.tar build/simplejava-docker-$(grep semver version.properties|cut -d= -f2).tar
           
+      - name: rename jib
+        env:
+          TESTING: "${{ steps.get_version.outputs.stdout }}"
+        run: |
+          echo "****" && echo "${TESTING}" && echo "****"
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
