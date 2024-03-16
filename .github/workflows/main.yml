@@ -187,14 +187,15 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/libs/*.jar"
-            build/*.tar
+            build/libs/simplejava-${{ steps.get_version.outputs.stdout }}.jar
+            build/simplejava-docker-${{grep semver version.properties|cut -d= -f2}}.tar
           tag_name: ${{ steps.get_version.outputs.stdout }}
           name: "Release ${{ steps.get_version.outputs.stdout }}"
           body: |
               Release ${{ steps.get_version.outputs.stdout }}
           draft: false
           prerelease: false
+          token: "${{ secrets.GH_TOKEN  }}"
         
 
   bump-version:
