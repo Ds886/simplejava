@@ -197,6 +197,7 @@ jobs:
         env:
           appversion: ${{ needs.get-version.outputs.appversion}}
         run: |
+          mkdir -p build
           mv simplejava-${appversion}.tgz build/simplejava-chart-${appversion}.tgz
 
       - uses: actions/upload-artifact@v4
