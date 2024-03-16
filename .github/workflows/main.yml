@@ -279,7 +279,10 @@ jobs:
         env:
           appversion: ${{ needs.get-version.outputs.appversion}}
         run: |
-          mv simplejava-${appversion}.tgz simplejava-chart-${appversion}.tgz  
+          mv simplejava-${appversion}.tgz simplejava-chart-${appversion}.tgz
+
+
+      # this might fail succesfully a probable solution is this or change action- https://github.com/softprops/action-gh-release/issues/194
 
       - name: Create Release
         id: create_release
