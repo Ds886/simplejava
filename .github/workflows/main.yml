@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  packages: write # needed for ghcr.io access
+  contents: write
 
 env:
   OCI_REPO: "oci://ghcr.io/ds886/manifests/${{ github.event.repository.name }}"
@@ -158,8 +161,6 @@ jobs:
 
   package-helm:
     runs-on:  ubuntu-latest
-    permissions:
-      packages: write # needed for ghcr.io access
     needs:  
       - get-version
       - build
@@ -285,9 +286,6 @@ jobs:
 
       - name: Create Release
         id: create_release
-        continue-on-error: true
-        permissions:
-          contents: write
         uses: softprops/action-gh-release@v2
         with:
           files: |
