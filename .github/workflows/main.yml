@@ -180,9 +180,9 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          path: 
-            - build
-            - version.properties
+          path: |
+            build
+            version.properties
           merge-multiple: true
 
       - name: Get version
