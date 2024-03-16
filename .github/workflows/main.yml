@@ -77,6 +77,9 @@ jobs:
       - build
       - test
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Get version
         uses: mathiasvr/command-output@v2.0.0
         id: get_version
