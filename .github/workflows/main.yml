@@ -246,56 +246,56 @@ jobs:
 
 
 
-  release:
-    runs-on:  ubuntu-latest
-    needs:  
-      - get-version
-      - bump-version
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          ssh-key: "${{ secrets.SSH_PKEY }}"
-          fetch-depth: 0
+  # release:
+  #   runs-on:  ubuntu-latest
+  #   needs:  
+  #     - get-version
+  #     - bump-version
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         ssh-key: "${{ secrets.SSH_PKEY }}"
+  #         fetch-depth: 0
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-build
-          path: build
-          merge-multiple: true
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: art-build
+  #         path: build
+  #         merge-multiple: true
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-jar
-          path: build
-          merge-multiple: true
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-jib
-          path: build
-          merge-multiple: true
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: art-jar
+  #         path: build
+  #         merge-multiple: true
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: art-jib
+  #         path: build
+  #         merge-multiple: true
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-helm
-          path: build
-          merge-multiple: true
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: art-helm
+  #         path: build
+  #         merge-multiple: true
 
-      # this might fail succesfully a probable solution is this or change action- https://github.com/softprops/action-gh-release/issues/194
+  #     # this might fail succesfully a probable solution is this or change action- https://github.com/softprops/action-gh-release/issues/194
 
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            build/libs/simplejava-${{ needs.get-version.outputs.appversion}}.jar
-            build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
-            build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
-            build/simplejava-chart-${{ needs.get-version.outputs.appversion}}.tgz
-          tag_name: ${{ needs.get-version.outputs.appversion }}
-          name: "Release"
-          body: |
-              Release
-          draft: false
-          prerelease: false
-          token: "${{ secrets.GH_TOKEN  }}"
+  #     - name: Create Release
+  #       id: create_release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: |
+  #           build/libs/simplejava-${{ needs.get-version.outputs.appversion}}.jar
+  #           build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
+  #           build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
+  #           build/simplejava-chart-${{ needs.get-version.outputs.appversion}}.tgz
+  #         tag_name: ${{ needs.get-version.outputs.appversion }}
+  #         name: "Release"
+  #         body: |
+  #             Release
+  #         draft: false
+  #         prerelease: false
+  #         token: "${{ secrets.GH_TOKEN  }}"
