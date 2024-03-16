@@ -99,7 +99,6 @@ jobs:
     needs:  
       - build 
       - test
-      - publish-jar
       - publish-jib
     steps:
       - name: Setup Gradle
