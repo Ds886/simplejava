@@ -22,12 +22,12 @@ spec:
       labels:
         app: simplejava
     spec:
+      imagePullSecrets:
+        - name: ghcr-login-secret
       containers:
       - name: simplejava
         image: ghcr.io/ds886/simplejava:latest
         imagePullPolicy: Always
-        imagePullSecrets:
-          - name: "ghcr-login-secret"
         ports:
         - name: http
           containerPort: 9898
