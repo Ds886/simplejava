@@ -89,7 +89,7 @@ jobs:
 
       - name: Update version helm
         run: |
-          sed -i "s/version: .*/version: $(grep semver version.properties|cut -d= -f2)/g helm/Chart.yaml"
+          sed -i "s/version: .*/version: $(grep semver version.properties|cut -d= -f2)/g" helm/Chart.yaml
 
       - name: bump version java
         run: |
