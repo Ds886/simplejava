@@ -132,6 +132,7 @@ jobs:
         with:
           name: my-artifact
           path: version.properties
+          overwrite: true
 
   release:
     runs-on:  ubuntu-latest
