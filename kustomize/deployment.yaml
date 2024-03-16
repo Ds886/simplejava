@@ -19,7 +19,7 @@ spec:
         prometheus.io/port: "9797"
       labels:
         app: simplejava
-        pipeline-date: "2024031653784"
+        pipeline-date: "2024031601116"
     spec:
       imagePullSecrets:
         - name: ghcr-login-secret
