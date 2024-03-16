@@ -126,7 +126,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add .
           git commit -m "GHA: Update build time [no ci]"
-          git push
+          git push --tags
 
       - uses: actions/upload-artifact@v4
         with:
@@ -148,7 +148,8 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: |
-            build
+            build/jib-image.tar
+            build/libs/*.jar
             version.properties
           merge-multiple: true
 
@@ -159,6 +160,7 @@ jobs:
 
       - name: rename jib
         run: |
+          ls  build build/libs
           mv build/jib-image.tar build/simplejava-docker-$(grep semver version.properties|cut -d= -f2).tar
           
       - name: Create Release
@@ -166,7 +168,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/*.jar
+            build/libs/*.jar
             build/*.tar
           tag_name: ${{ steps.get_version.outputs.stdout }}
           release_name: Release ${{ steps.get_version.outputs.stdout }}
