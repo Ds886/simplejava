@@ -291,7 +291,7 @@ jobs:
             build/libs/simplejava-${{ needs.get-version.outputs.appversion}}.jar
             build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
             build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
-            build/simplejava-chart-${{ needs.get-version.outputs.appversion}}.tgz  
+            build/simplejava-chart-${{ needs.get-version.outputs.appversion}}.tgz
           tag_name: ${{ needs.get-version.outputs.appversion }}
           name: "Release"
           body: |
