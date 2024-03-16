@@ -294,9 +294,9 @@ jobs:
             build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
             simplejava-chart-${{ needs.get-version.outputs.appversion}}.tgz  
           tag_name: ${{ needs.get-version.outputs.appversion}}
-          name: "Release ${{ needs.get-version.outputs.appversion}}"
+          name: "Release"
           body: |
-              Release  ${{ steps.get_version.outputs.stdout }}
+              Release
           draft: false
           prerelease: false
           token: "${{ secrets.GH_TOKEN  }}"
