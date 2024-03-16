@@ -136,66 +136,13 @@ jobs:
           path: |
             build/*.tar
 
-  bump-version:
+  release:
     runs-on:  ubuntu-latest
     needs:  
       - build 
       - test
       - publish-jar
       - publish-jib
-    steps:
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          ssh-key: "${{ secrets.SSH_PKEY }}"
-          fetch-depth: 0
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-build
-          path: build
-          merge-multiple: true
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-jib
-          path: build/*.tar
-          merge-multiple: true
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-jar
-          path: build/lib
-          merge-multiple: true
-
-      - name: Update version
-        run: |
-          sed -i "s/pipeline-date:.*$/pipeline-date: \"$(date "+%Y%m%d%S%3N")\"/" kustomize/deployment.yaml
-          gradle incrementPatch
-          git add version.properties
-          git tag $(grep semver version.properties|cut -d= -f2)
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add version.properties
-          git commit -m "GHA: Update build time [no ci]"
-          git push --tags
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: art-version
-          path: |
-            version.properties
-
-  release:
-    runs-on:  ubuntu-latest
-    needs:  
-      - build 
-      - test
-      - publish-jib
-      - bump-version 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -215,11 +162,6 @@ jobs:
           name: art-jib
           path: |
             build/jib-image.tar
-          merge-multiple: true
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-version
           merge-multiple: true
 
       - name: Get version
@@ -248,4 +190,43 @@ jobs:
           draft: false
           prerelease: false
         
+
+  bump-version:
+    runs-on:  ubuntu-latest
+    needs:  
+      - release
+    steps:
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ssh-key: "${{ secrets.SSH_PKEY }}"
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: art-build
+          path: build
+          merge-multiple: true
+
+      - name: Update version
+        run: |
+          sed -i "s/pipeline-date:.*$/pipeline-date: \"$(date "+%Y%m%d%S%3N")\"/" kustomize/deployment.yaml
+          gradle incrementPatch
+          git add version.properties
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add version.properties
+          git commit -m "GHA: Update build time [no ci]"
+          git tag $(grep semver version.properties|cut -d= -f2)
+          git commit -m "GHA: Update tags [no ci]"
+          git push --tags
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: art-version
+          path: |
+            version.properties
 
