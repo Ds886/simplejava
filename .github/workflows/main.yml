@@ -94,7 +94,7 @@ jobs:
         with:
           name: art-jar
           path: |
-            build/lib/*.jar
+            build/libs/*.jar
 
   publish-jib:
     runs-on:  ubuntu-latest
