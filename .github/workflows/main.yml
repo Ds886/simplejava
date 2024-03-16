@@ -58,7 +58,9 @@ jobs:
           ./gradlew  test
   bump-version:
     runs-on:  ubuntu-latest
-    needs:  build test
+    needs:  
+      - build 
+      - test
     steps:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
