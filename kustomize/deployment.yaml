@@ -26,6 +26,8 @@ spec:
       - name: simplejava
         image: ghcr.io/ds886/simplejava:1.2.6
         imagePullPolicy: IfNotPresent
+        imagePullSecrets:
+          - name: "ghcr-login-secret"
         ports:
         - name: http
           containerPort: 9898
