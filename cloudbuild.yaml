@@ -4,3 +4,4 @@ steps:
 images: 
   - 'gcr.io/$PROJECT_ID/simplejava:$BRANCH_NAME-$SHORT_SHA'
   - 'gcr.io/$PROJECT_ID/simplejava:$TAG'
+  - 'gcr.io/$PROJECT_ID/simplejava:aaa$TAG'
