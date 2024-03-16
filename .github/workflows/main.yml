@@ -23,7 +23,8 @@ jobs:
         run: |
           pwd
           ls
-          ./gradlew  clean build
+          ./gradlew  clean build 
+
       - uses: actions/upload-artifact@v4
         with:
           name: my-artifact
@@ -57,14 +58,85 @@ jobs:
         run: |
           ./gradlew  test
 
+  publish-jar:
+    runs-on:  ubuntu-latest
+    needs:  
+      - build
+      - test
+    steps:
+      - name: Initial setup
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: build
+          merge-multiple: true
+
+      - name: Build with Gradle
+        run: |
+          pwd
+          ls
+          ./gradlew  jar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: build
+
+  publish-jib:
+    runs-on:  ubuntu-latest
+    needs:  
+      - build
+      - test
+    steps:
+      - name: Initial setup
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: build
+          merge-multiple: true
+
+      - name: Build with Gradle
+        run: |
+          pwd
+          ls
+          ./gradlew  jibBuildTar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: build
+
   bump-version:
     runs-on:  ubuntu-latest
     needs:  
       - build 
       - test
+      - publish-jar
     steps:
-      # - name: Setup Gradle
-      #   uses: gradle/actions/setup-gradle@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -72,19 +144,67 @@ jobs:
           ssh-key: "${{ secrets.SSH_PKEY }}"
           fetch-depth: 0
 
+      - uses: actions/download-artifact@v4
+        with:
+          path: build
+          merge-multiple: true
+
       - name: Update version
         run: |
           sed -i "s/pipeline-date:.*$/pipeline-date: \"$(date "+%Y%m%d%S%3N")\"/" kustomize/deployment.yaml
-
-      - name: commmit
-        run: |
+          gradle incrementPatch
+          git add version.properties
+          git tag $(grep semver version.properties|cut -d= -f2)
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
           git commit -m "GHA: Update build time [no ci]"
           git push
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: version.properties
+
+  release:
+    runs-on:  ubuntu-latest
+    needs:  
+      - bump-version 
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ssh-key: "${{ secrets.SSH_PKEY }}"
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: 
+            - build
+            - version.properties
+          merge-multiple: true
+
+      - name: Get version
+        id: get_version
+        run: |
+          grep semver version.properties|cut -d= -f2
+
+      - name: rename jib
+        run: |
+          mv build/jib-image.tar build/simplejava-docker-$(grep semver version.properties|cut -d= -f2).tar
+          
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/*.jar
+            build/*.tar
+          tag_name: ${{ steps.get_version.outputs.stdout }}
+          release_name: Release ${{ steps.get_version.outputs.stdout }}
+          body: |
+            Release
+          draft: false
+          prerelease: false
         
-# TODO: bundle tar and jar
-# TODO: create github local runner to upload image 
-# TODO: Create new release
 
