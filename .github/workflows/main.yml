@@ -188,7 +188,7 @@ jobs:
         with:
           files: |
             build/libs/simplejava-${{ steps.get_version.outputs.stdout }}.jar
-            build/simplejava-docker-${{grep semver version.properties|cut -d= -f2}}.tar
+            build/simplejava-docker-${{ steps.get_version.outputs.stdout }}.tar
           tag_name: ${{ steps.get_version.outputs.stdout }}
           name: "Release ${{ steps.get_version.outputs.stdout }}"
           body: |
