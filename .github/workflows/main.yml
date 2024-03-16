@@ -187,7 +187,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            "build/libs/simplejava-${{ steps.get_version.outputs.stdout }}.jar"
+            build/libs/*.jar"
             build/*.tar
           tag_name: ${{ steps.get_version.outputs.stdout }}
           name: "Release ${{ steps.get_version.outputs.stdout }}"
