@@ -146,6 +146,12 @@ jobs:
           ls
           ./gradlew  jibBuildTar
 
+      - name: rename jib
+        env:
+          appversion: ${{ needs.get-version.outputs.appversion}}
+        run: |
+          mv build/jib-image.tar build/simplejava-docker-${appversion}.tar
+
       - uses: actions/upload-artifact@v4
         with:
           name: art-jib
@@ -185,6 +191,12 @@ jobs:
           registry: ghcr.io
           registry_username: ${{ secrets.GH_USER }}
           registry_password: ${{ secrets.GH_TOKEN}}
+
+      - name: rename helm
+        env:
+          appversion: ${{ needs.get-version.outputs.appversion}}
+        run: |
+          mv simplejava-${appversion}.tgz simplejava-chart-${appversion}.tgz
 
       - uses: actions/upload-artifact@v4
         with:
@@ -268,19 +280,6 @@ jobs:
         with:
           name: art-helm
           merge-multiple: true
-
-      - name: rename jib
-        env:
-          appversion: ${{ needs.get-version.outputs.appversion}}
-        run: |
-          mv build/jib-image.tar build/simplejava-docker-${appversion}.tar
-
-      - name: rename helm
-        env:
-          appversion: ${{ needs.get-version.outputs.appversion}}
-        run: |
-          mv simplejava-${appversion}.tgz simplejava-chart-${appversion}.tgz
-
 
       # this might fail succesfully a probable solution is this or change action- https://github.com/softprops/action-gh-release/issues/194
 
