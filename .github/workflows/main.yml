@@ -1,6 +1,9 @@
 name: default
 
-on: [push]
+on:
+  push:
+      tags-ignore:
+        - '*'
 
 jobs:
   build:
@@ -185,7 +188,6 @@ jobs:
           name: art-version
           path: |
             version.properties
-  #         overwrite: true
 
   release:
     runs-on:  ubuntu-latest
