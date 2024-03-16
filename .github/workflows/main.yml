@@ -97,7 +97,7 @@ jobs:
         with:
           name: art-jar
           path: |
-            build/libs/*.jar
+            build/libs
 
   publish-jib:
     runs-on:  ubuntu-latest
@@ -207,7 +207,7 @@ jobs:
         with:
           name: art-jar
           path: |
-            build/libs/*.jar
+            build/libs
           merge-multiple: true
 
       - uses: actions/download-artifact@v4
@@ -239,12 +239,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/libs/*.jar
+            build/libs/simplejava-${{ steps.get_version.outputs.stdout }}.jar
             build/*.tar
           tag_name: ${{ steps.get_version.outputs.stdout }}
-          release_name: Release ${{ steps.get_version.outputs.stdout }}
+          name: "Release ${{ steps.get_version.outputs.stdout }}"
           body: |
-            Release
+              Release ${{ steps.get_version.outputs.stdout }}
           draft: false
           prerelease: false
         
