@@ -63,8 +63,8 @@ jobs:
       - build 
       - test
     steps:
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+      # - name: Setup Gradle
+      #   uses: gradle/actions/setup-gradle@v3
 
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
 
       - name: Update version
         run: |
-          sed -i "s/pipeline-date:.*$/pipeline-date: \"$(date)\"/" kustomize/deployment.yaml
+          sed -i "s/pipeline-date:.*$/pipeline-date: \"$(date "+%Y%m%d%S%3N")\"/" kustomize/deployment.yaml
 
       - name: commmit
         run: |
