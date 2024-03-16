@@ -58,40 +58,6 @@ jobs:
         run: |
           ./gradlew  test
 
-  publish-jar:
-    runs-on:  ubuntu-latest
-    needs:  
-      - build
-      - test
-    steps:
-      - name: Initial setup
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          architecture: x64
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          path: build
-          merge-multiple: true
-
-      - name: Build with Gradle
-        run: |
-          pwd
-          ls
-          ./gradlew  jar
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: my-artifact
-          path: build
 
   publish-jib:
     runs-on:  ubuntu-latest
@@ -126,7 +92,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: my-artifact
-          path: build
+          path: build/jib-image.tar
 
   bump-version:
     runs-on:  ubuntu-latest
