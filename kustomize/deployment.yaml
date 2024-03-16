@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: simplejava
-        image: ghcr.io/ds886/simplejava:latest
+        image: ghcr.io/ds886/simplejava
         imagePullPolicy: IfNotPresent
         imagePullSecrets:
           - name: "ghcr-login-secret"
