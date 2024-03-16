@@ -5,9 +5,7 @@ on:
     branches:
       - main
 
-permissions:
-  packages: write # needed for ghcr.io access
-  contents: write
+permissions: write-all
 
 env:
   OCI_REPO: "oci://ghcr.io/ds886/manifests/${{ github.event.repository.name }}"
