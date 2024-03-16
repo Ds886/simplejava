@@ -111,14 +111,13 @@ jobs:
       - name: Chart  Push
         uses: appany/helm-oci-chart-releaser@v0.3.0
         with:
-          name: my-chart
+          name: simplejava
           repository: simplejava
           tag: ${{ needs.get-version.outputs.appversion}}
           path: helm # Default charts/{name}
           registry: ghcr.io
           registry_username: ${{ secrets.GH_USER }}
           registry_password: ${{ secrets.GH_TOKEN}}
-          update_dependencies: 'true' # Defaults to false
 
 
 
