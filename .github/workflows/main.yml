@@ -95,6 +95,7 @@ jobs:
           mark_as_latest: true
         env:
           CR_TOKEN: "${{ secrets.GH_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
 
   bump-version:
     runs-on:  ubuntu-latest
