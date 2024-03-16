@@ -83,10 +83,17 @@ jobs:
           path: build
           merge-multiple: true
 
-      - name: Update version
+      - name: Update version pipeline
         run: |
+          echo "****" && echo aaaaaa && ls kustomize/deployment.yaml && echo "*****"
           sed -i "s/pipeline-date:.*$/pipeline-date: \"$(date "+%Y%m%d%S%3N")\"/" kustomize/deployment.yaml
+
+      - name: Update version helm
+        run: |
           sed -i "s/version: .*/version: $(grep semver version.properties|cut -d= -f2)/g"
+
+      - name: bump version java
+        run: |
           gradle incrementPatch
 
       - name: Push  changes
