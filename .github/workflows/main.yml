@@ -221,11 +221,14 @@ jobs:
       - name: Update version
         run: |
           sed -i "s/pipeline-date:.*$/pipeline-date: \"$(date "+%Y%m%d%S%3N")\"/" kustomize/deployment.yaml
+          sed -i "s/version: .*/version: $(grep semver version.properties|cut -d= -f2)"
           gradle incrementPatch
-          git add version.properties
+
+      - name: Push  changes
+        run: |
+          git add .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add version.properties
           git commit -m "GHA: Update build time [no ci]"
           git tag $(grep semver version.properties|cut -d= -f2)
           git commit -m "GHA: Update tags [no ci]"
