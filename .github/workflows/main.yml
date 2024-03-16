@@ -23,9 +23,8 @@ jobs:
 
       - name: Get version
         id: get_version
-        with:
-          run: |
-            echo "test=$(grep semver version.properties|cut -d= -f2)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "test=$(grep semver version.properties|cut -d= -f2)" >> "$GITHUB_OUTPUT"
 
   build:
     runs-on:  ubuntu-latest
