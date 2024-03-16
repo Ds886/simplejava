@@ -13,6 +13,21 @@ env:
 
 
 jobs:
+  get-version:
+    outputs:
+      appversion: ${{ steps.get_Version.outputs.test  }}
+    runs-on:  ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Get version
+        uses: mathiasvr/command-output@v2.0.0
+        id: get_version
+        with:
+          run: |
+            echo "test=$(grep semver version.properties|cut -d= -f2)" >> "$GITHUB_OUTPUT"
+
   build:
     runs-on:  ubuntu-latest
     steps:
@@ -43,7 +58,6 @@ jobs:
 
   test:
     runs-on:  ubuntu-latest
-    needs:  build
     steps:
       - name: Initial setup
         uses: actions/setup-java@v4
@@ -69,30 +83,88 @@ jobs:
         run: |
           ./gradlew  test
 
-  get-version:
-    outputs:
-      appversion: ${{ steps.get_Version.outputs.test  }}
+  publish-jar:
     runs-on:  ubuntu-latest
     needs:  
+      - get-version
       - build
       - test
     steps:
+      - name: Initial setup
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Get version
-        uses: mathiasvr/command-output@v2.0.0
-        id: get_version
+      - uses: actions/download-artifact@v4
         with:
-          run: |
-            echo "test=$(grep semver version.properties|cut -d= -f2)" >> "$GITHUB_OUTPUT"
+          name: art-build
+          path: build
+          merge-multiple: true
+
+      - name: Build with Gradle
+        run: |
+          pwd
+          ls
+          ./gradlew  jibBuildTar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: art-jar
+          path: |
+            build/libs
+
+  publish-jib:
+    runs-on:  ubuntu-latest
+    needs:  
+      - get-version
+      - build
+      - test
+    steps:
+      - name: Initial setup
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: art-build
+          path: build
+          merge-multiple: true
+
+      - name: Build with Gradle
+        run: |
+          pwd
+          ls
+          ./gradlew  jibBuildTar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: art-jib
+          path: |
+            build/*.tar
 
   package-helm:
     runs-on:  ubuntu-latest
     needs:  
+      - get-version
       - build
       - test
-      - get-version
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -126,7 +198,10 @@ jobs:
   bump-version:
     runs-on:  ubuntu-latest
     needs:  
+      - get-version
       - package-helm 
+      - publish-jib
+      - publish-jar
     steps:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -143,7 +218,18 @@ jobs:
           path: build
           merge-multiple: true
 
-      - name: Update version pipeline
+      - uses: actions/download-artifact@v4
+        with:
+          name: art-jar
+          path: build
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: art-jib
+          path: build
+          merge-multiple: true
+
+      - name: Update version pipeline - kustomize
         run: |
           sed -i "s/pipeline-date:.*$/pipeline-date: \"$(date "+%Y%m%d%S%3N")\"/" kustomize/deployment.yaml
 
@@ -165,9 +251,18 @@ jobs:
           git tag $(grep semver version.properties|cut -d= -f2)
           git push --tags
 
-      - uses: actions/upload-artifact@v4
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
         with:
-          name: art-version
-          path: |
-            version.properties
+          files: |
+            build/libs/simplejava-${{ needs.get-version.outputs.appversion}}.jar
+            build/simplejava-docker-${{ needs.get-version.outputs.appversion}}.tar
+          tag_name: ${{ steps.get_version.outputs.stdout }}
+          name: "Release ${{ steps.get_version.outputs.stdout }}"
+          body: |
+              Release ${{ steps.get_version.outputs.stdout }}
+          draft: false
+          prerelease: false
+          token: "${{ secrets.GH_TOKEN  }}"
 
