@@ -134,6 +134,7 @@ jobs:
       - build 
       - test
       - publish-jar
+      - publish-jib
     steps:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
