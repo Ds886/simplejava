@@ -136,66 +136,67 @@ jobs:
           path: |
             build/*.tar
 
-  release:
-    runs-on:  ubuntu-latest
-    needs:  
-      - build 
-      - test
-      - publish-jar
-      - publish-jib
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          ssh-key: "${{ secrets.SSH_PKEY }}"
-          fetch-depth: 0
+  # future reference issue in getting the file name templated
+  # release:
+  #   runs-on:  ubuntu-latest
+  #   needs:  
+  #     - build 
+  #     - test
+  #     - publish-jar
+  #     - publish-jib
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         ssh-key: "${{ secrets.SSH_PKEY }}"
+  #         fetch-depth: 0
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-jar
-          path: |
-            build/libs
-          merge-multiple: true
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: art-jar
+  #         path: |
+  #           build/libs
+  #         merge-multiple: true
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: art-jib
-          path: |
-            build/jib-image.tar
-          merge-multiple: true
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: art-jib
+  #         path: |
+  #           build/jib-image.tar
+  #         merge-multiple: true
 
-      - name: Get version
-        uses: mathiasvr/command-output@v2.0.0
-        id: get_version
-        with:
-          run: |
-            grep semver version.properties|cut -d= -f2
+  #     - name: Get version
+  #       uses: mathiasvr/command-output@v2.0.0
+  #       id: get_version
+  #       with:
+  #         run: |
+  #           grep semver version.properties|cut -d= -f2
 
-      - name: rename jib
-        run: |
-          echo "****" && ls  build build/libs && echo "****"
-          mv build/jib-image.tar build/simplejava-docker-$(grep semver version.properties|cut -d= -f2).tar
+  #     - name: rename jib
+  #       run: |
+  #         echo "****" && ls  build build/libs && echo "****"
+  #         mv build/jib-image.tar build/simplejava-docker-$(grep semver version.properties|cut -d= -f2).tar
           
-      - name: rename jib
-        env:
-          TESTING: "${{ steps.get_version.outputs.stdout }}"
-        run: |
-          echo "****" && echo "${TESTING}" && echo "****"
+  #     - name: rename jib
+  #       env:
+  #         TESTING: "${{ steps.get_version.outputs.stdout }}"
+  #       run: |
+  #         echo "****" && echo "${TESTING}" && echo "****"
 
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            build/libs/simplejava-${{ steps.get_version.outputs.stdout }}.jar
-            build/simplejava-docker-${{ steps.get_version.outputs.stdout }}.tar
-          tag_name: ${{ steps.get_version.outputs.stdout }}
-          name: "Release ${{ steps.get_version.outputs.stdout }}"
-          body: |
-              Release ${{ steps.get_version.outputs.stdout }}
-          draft: false
-          prerelease: false
-          token: "${{ secrets.GH_TOKEN  }}"
+  #     - name: Create Release
+  #       id: create_release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: |
+  #           build/libs/simplejava-${{ steps.get_version.outputs.stdout }}.jar
+  #           build/simplejava-docker-${{ steps.get_version.outputs.stdout }}.tar
+  #         tag_name: ${{ steps.get_version.outputs.stdout }}
+  #         name: "Release ${{ steps.get_version.outputs.stdout }}"
+  #         body: |
+  #             Release ${{ steps.get_version.outputs.stdout }}
+  #         draft: false
+  #         prerelease: false
+  #         token: "${{ secrets.GH_TOKEN  }}"
         
 
   bump-version:
@@ -221,7 +222,7 @@ jobs:
       - name: Update version
         run: |
           sed -i "s/pipeline-date:.*$/pipeline-date: \"$(date "+%Y%m%d%S%3N")\"/" kustomize/deployment.yaml
-          sed -i "s/version: .*/version: $(grep semver version.properties|cut -d= -f2)"
+          sed -i "s/^version: .*$/version: $(grep semver version.properties|cut -d= -f2)/g"
           gradle incrementPatch
 
       - name: Push  changes
