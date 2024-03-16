@@ -85,7 +85,7 @@ jobs:
         id: get_version
         with:
           run: |
-            grep semver version.properties|cut -d= -f2 >> "$GITHUB_OUTPUT"
+            echo "test=$(grep semver version.properties|cut -d= -f2)" >> "$GITHUB_OUTPUT"
 
   package-helm:
     runs-on:  ubuntu-latest
