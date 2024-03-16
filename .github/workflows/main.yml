@@ -93,7 +93,7 @@ jobs:
         with:
           name: my-artifact
           path: build/jib-image.tar
-        overwrite: true
+          overwrite: true
 
   bump-version:
     runs-on:  ubuntu-latest
