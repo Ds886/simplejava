@@ -2,8 +2,8 @@ name: default
 
 on:
   push:
-      tags-ignore:
-        - '*'
+    branches:
+      - main
 
 jobs:
   build:
