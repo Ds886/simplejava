@@ -38,6 +38,6 @@ task runWithJavaExec(type: JavaExec) {
     group = "Execution"
     description = "Run the main class with JavaExecTask"
     classpath = sourceSets.main.runtimeClasspath
-    main = 'org.simple.Main'
+    mainClass = 'org.simple.Main'
 }
 
