@@ -9,7 +9,7 @@ plugins {
 group = 'org.simple'
 version = '1.0.0-SNAPSHOT'
 application {
-    mainClassName = "org.simple.Main"
+    mainClass = "org.simple.Main"
 }
 
 
